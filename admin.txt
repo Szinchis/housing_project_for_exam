@@ -1,0 +1,3 @@
+felhasználó: szini
+email: szini.peter@freemail.hu
+jelszó: admin
