@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'django_filters', #Csak hogy végre működjön a filterezés is, mert 2 órát ültem csak ez a hiba felett....
+    'corsheaders', #CORS engedélyezése, hogy a frontend is elérhesse a backend API-ját, mert máshogy rinyálni fog a VITE
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -130,3 +132,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+#És ahhoz, hogy ezt engedélyezzük, ez mondja a DJango-nak, hogy milyen URL-ekről engedélyezze a CORS-t.
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    #"http://
+]

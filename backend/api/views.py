@@ -1,5 +1,9 @@
 from django.shortcuts import render
 
+#Ez kell a test_decorhoz.
+from django.http import JsonResponse
+
+
 # Create your views here.
 
 
@@ -13,10 +17,6 @@ from .serializers import CategorySerializer, DecorSerializer, SubCategorySeriali
 class CategoryViewSets(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
-class DecorViewSets(viewsets.ModelViewSet):
-    queryset = Decor.objects.all()
-    serializer_class = DecorSerializer
 
 class SubCategoryViewSets(viewsets.ModelViewSet):
     queryset = SubCategory.objects.all()
@@ -65,3 +65,15 @@ class DecorViewSets(viewsets.ModelViewSet):
 
 
 
+#Csinálunk egy "teszt" decort, hogy lássuk, hogy működik-e a filterezés, és hogy a VITE is látja-e a backend API-ját, mert ha nem engedélyezzük a CORS-t, akkor a VITE rinyálni fog, hogy nem éri el a backend API-ját, és így nem fog működni a filterezés sem.
+def test_decor(request):
+    return JsonResponse({
+        "id": 1,
+        "name": "Test Decor",
+        "category": "Test Category",
+        "subcategory": "Test SubCategory",
+        "culture": "Test Culture",
+        "style": "Test Style",
+        "size": "Test Size",
+        "expansion": "Test Expansion"
+    })

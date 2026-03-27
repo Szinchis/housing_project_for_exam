@@ -26,8 +26,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from api.views import (
-    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets
+    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets, test_decor
 )
+
 
 router = routers.DefaultRouter()
 router.register(r'categories', CategoryViewSets)
@@ -41,4 +42,7 @@ router.register(r'expansions', ExpansionViewSets)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    path("api/test/", test_decor)
 ]
+
+#Itt ügye az aputest-et utólag biggyesztettem hozzá a teszteléshez.
