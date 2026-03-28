@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # Itt becuppantjuk a REST-et és az API-t
     'rest_framework',
+    'rest_framework.authtoken', #Ez kell majd a tokenes auth-hoz, amit még nem csináltunk meg, de majd fogunk, vagy valami
     'api',
     'django_filters', #Csak hogy végre működjön a filterezés is, mert 2 órát ültem csak ez a hiba felett....
     'corsheaders', #CORS engedélyezése, hogy a frontend is elérhesse a backend API-ját, mert máshogy rinyálni fog a VITE

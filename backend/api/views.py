@@ -7,10 +7,27 @@ from django.http import JsonResponse
 # Create your views here.
 
 
-# Itt ügye ráhivjuk a világmindenséget. A REST részéből kell a vjúvszet, majd kell a .models-ből az összes és ugyan igy az ez előtt megirt .serializers összes része is.
+#Itt ügye ráhivjuk a világmindenséget. A REST részéből kell a vjúvszet, majd kell a .models-ből az összes és ugyan igy az ez előtt megirt .serializers összes része is.
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Category, Decor, SubCategory, Culture, Style, Size, Expansion
 from .serializers import CategorySerializer, DecorSerializer, SubCategorySerializer, CultureSerializer, StyleSerializer, SizeSerializer, ExpansionSerializer
+
+
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
+from rest_framework import status
+#Ez a rész azért kell, hogy a regisztráció után létrehozzuk a token-t, amit majd a frontend használni fog a hitelesítéshez, és hogy visszaadjuk a token-t a regisztrációs válaszban.
+
+
+
+#Majd létrehozzuk az /api/me/ végpontot, ahol a frontend lekérdezheti a saját adatait, és itt majd visszaadjuk a token-hez tartozó user adatokat, hogy a frontend tudja, hogy ki van bejelentkezve.
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+
+
+
 
 
 # Majd a konkrét Viewset-ek:
@@ -76,4 +93,55 @@ def test_decor(request):
         "style": "Test Style",
         "size": "Test Size",
         "expansion": "Test Expansion"
+    })
+
+
+
+
+
+#Nah és ide ficcentjük a regisztrációs view-t, ami létrehozza a felhasználót és a token-t is, majd visszaadja a token-t a válaszban.
+#Logikusan ez a REGISZTRÁCIÓS VIEW, szóval POST metódusra fog reagálni, és a request body-ban várja majd a username-t és a password-ot, amivel létrehozza a felhasználót, majd létrehozza a token-t is, és visszaadja a token-t a válaszban.
+@api_view(['POST'])
+def register_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if User.objects.filter(username=username).exists():
+        return Response({'error': 'A felhasználónév már foglalt!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=username, password=password)
+    token = Token.objects.create(user=user)
+
+    return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+
+# És itt van a login view is, ami szintén POST metódusra fog reagálni, és a request body-ban várja majd a username-t és a password-ot, amivel ellenőrzi a felhasználó létezését és a jelszó helyességét, majd ha minden rendben van, akkor visszaadja a token-t a válaszban.
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = User.objects.filter(username=username).first()
+
+    if user is None or not user.check_password(password):
+        return Response({'detail': 'Hibás belépési adatok'}, status=status.HTTP_400_BAD_REQUEST)
+
+    token, created = Token.objects.get_or_create(user=user)
+
+    return Response({'token': token.key})
+
+
+
+
+
+
+#És ügye meg is csináljuk az /api/me/ végpontot, ahol a frontend lekérdezgethet ->
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+
+def me_view(request):
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username
+        #Itt ügye irkálhatnánk még akármit, de ez még is csak egy vizsgaremek, nem kezelünk emailt, meg semmit, szóval jóóvane' alapon lesz ez igy.
     })

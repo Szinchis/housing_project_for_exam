@@ -26,7 +26,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from api.views import (
-    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets, test_decor
+    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets, test_decor, register_view, login_view, me_view
 )
 
 
@@ -42,7 +42,14 @@ router.register(r'expansions', ExpansionViewSets)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path("api/test/", test_decor)
+
+    path("api/test/", test_decor),
+
+    path("api/register/", register_view),
+    path("api/login/", login_view),
+    path("api/me/", me_view),
 ]
 
-#Itt ügye az aputest-et utólag biggyesztettem hozzá a teszteléshez.
+#Itt ügye az apuTEST-et utólag biggyesztettem hozzá a teszteléshez.
+
+#Sokadik: És ügye hozzáteszem a utólagosan a views.get_decors - a regisztrációs URLT-t - és a login URLT-t is.

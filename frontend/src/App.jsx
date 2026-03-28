@@ -1,8 +1,27 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+
 import './App.css'
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+
+
+//Az app.jsx becsomagolása az AuthProviderbe, hogy minden oldalunkon elérhető legyen a user állapot és a login/logout függvények, amiket majd a headerben fogunk használni, hogy megjelenítsük a bejelentkezett felhasználó nevét és egy kijelentkezés gombot.
+
+import { AuthProvider } from "./AuthContext";
+
+
+//Itt pedig importáljuk a headerünket ->
+import Header from "./components/Header";
+
+
+
+//Itt meg regisztrációs weblapot importálgatunk ->
+import Register from "./pages/Register";
+
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -40,56 +59,24 @@ function App() {
 
 
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
 
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+//Innen meg az alapértelmezett VITE kódsort áttettük a Home.jsx-be, hogy az legyen az alapértelmezett oldalunk, innentől kezdve az APP-ból csak routereket fogunk meghivkálni különböző oldalakra.
+//Nah meg azért csak adjon vissza valamit ez is, igy ebbe a "return" részbe fogjuk a routokat megadni.
 
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+return (
+  <AuthProvider>
+    <BrowserRouter>
+      <Header />
 
-      <div className="ticks"></div>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Home decors={decors} />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  </AuthProvider>
+);
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-        </div>
-      </section>
-
-      {/* Itten lesznek a decorjaink. */}
-      <h1>Decor lista</h1>
-      <ul>
-        {decors.map(item => (
-          <li key={item.id}>
-            ID: {item.id} – Culture: {item.culture} – Style: {item.style}
-          </li>
-        ))}
-      </ul>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
 
 }
 
