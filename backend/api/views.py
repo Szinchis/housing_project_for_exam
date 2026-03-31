@@ -8,16 +8,16 @@ from django.http import JsonResponse
 
 
 #Itt ügye ráhivjuk a világmindenséget. A REST részéből kell a vjúvszet, majd kell a .models-ből az összes és ugyan igy az ez előtt megirt .serializers összes része is.
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Category, Decor, SubCategory, Culture, Style, Size, Expansion
-from .serializers import CategorySerializer, DecorSerializer, SubCategorySerializer, CultureSerializer, StyleSerializer, SizeSerializer, ExpansionSerializer
+from .serializers import CategorySerializer, DecorSerializer, SubCategorySerializer, CultureSerializer, StyleSerializer, SizeSerializer, ExpansionSerializer, FavoriteSerializer
 
 
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from rest_framework import status
+from rest_framework import status, filters
 #Ez a rész azért kell, hogy a regisztráció után létrehozzuk a token-t, amit majd a frontend használni fog a hitelesítéshez, és hogy visszaadjuk a token-t a regisztrációs válaszban.
 
 
@@ -25,6 +25,22 @@ from rest_framework import status
 #Majd létrehozzuk az /api/me/ végpontot, ahol a frontend lekérdezheti a saját adatait, és itt majd visszaadjuk a token-hez tartozó user adatokat, hogy a frontend tudja, hogy ki van bejelentkezve.
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+
+
+
+#Majd pedig a backendfiltert is megimportálgatjuk ->
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+
+
+# Ügye a Favorite modellekhez is kell vjúvszet, hogy a frontend tudja kezelni a kedvenceket, szóval létrehozzuk a FavoriteViewSet-et is, ami a Favorite modellel fog dolgozni, és a FavoriteSerializer-t fogja használni. Itt már persze a serializer importjából bekértük a FavoriteSerializer-t, hogy tudjuk használni a FavoriteViewSet-ben, de ezt a meglévőbe irtam, nem külön sorban hivtam meg (fentebb az alap .serializers import-nál.). - Meg persze a rest_framework permissions részt is beimportáljuk a meglévő viewsets mellé.
+from .models import Favorite
+from .serializers import FavoriteSerializer
+
+
+
+
 
 
 
@@ -66,7 +82,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 class DecorViewSets(viewsets.ModelViewSet):
     queryset = Decor.objects.all()
     serializer_class = DecorSerializer
-    filter_backends = [DjangoFilterBackend]
+
+    # Szűrés + keresés
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+
     filterset_fields = [
         'category',
         'subcategory',
@@ -76,9 +95,27 @@ class DecorViewSets(viewsets.ModelViewSet):
         'expansion'
     ]
 
+    # Keresés név szerint (feltételezve, hogy ezeknek van name mezője)
+    search_fields = [
+        'culture__name',
+        'style__name',
+        'category__name',
+        'subcategory__name',
+        'expansion__name',
+        'size__name',
+    ]
+
     def list(self, request, *args, **kwargs):
         print("FILTER FUT")
         return super().list(request, *args, **kwargs)
+
+
+
+
+
+
+
+
 
 
 
@@ -94,6 +131,13 @@ def test_decor(request):
         "size": "Test Size",
         "expansion": "Test Expansion"
     })
+
+
+
+
+
+
+
 
 
 
@@ -134,6 +178,9 @@ def login_view(request):
 
 
 
+
+
+
 #És ügye meg is csináljuk az /api/me/ végpontot, ahol a frontend lekérdezgethet ->
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -145,3 +192,26 @@ def me_view(request):
         "username": user.username
         #Itt ügye irkálhatnánk még akármit, de ez még is csak egy vizsgaremek, nem kezelünk emailt, meg semmit, szóval jóóvane' alapon lesz ez igy.
     })
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Itt ügye pedig létrehozzuk maga a FavoriteViewSet-eket, amiben felhasználóra bontva létrehozza, vagy törli a kedvenceket, és visszaadja a kedvenceket a válaszban, hogy a frontend tudja kezelni a kedvenceket. Itt is persze a szűrőket is beállítjuk, hogy csak a saját kedvenceinket lássuk, és hogy csak a saját kedvenceinket tudjuk törölni.
+class FavoriteViewSet(viewsets.ModelViewSet):
+    serializer_class = FavoriteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Favorite.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

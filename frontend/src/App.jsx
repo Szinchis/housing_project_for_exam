@@ -17,9 +17,16 @@ import { AuthProvider } from "./AuthContext";
 import Header from "./components/Header";
 
 
-
 //Itt meg regisztrációs weblapot importálgatunk ->
 import Register from "./pages/Register";
+
+
+//Itt a profil oldalt importáljuk ->
+import Profile from "./pages/Profile";
+//És itt a védett útvonalat, amivel megvédjük a profil oldalunkat, hogy csak bejelentkezve lehessen elérni ->
+import ProtectedRoute from "./components/ProtectedRoute";
+//És végül a kedvenceink oldalát is importáljuk, ahol megjelenítjük a kedvenceinket, és ahol tudjuk kezelni őket ->
+import Favorites from "./pages/Favorites";
 
 
 
@@ -43,7 +50,7 @@ function App() {
 
 
 
-  
+/*  
   const [decors, setDecors] = useState([]);
 
   useEffect(() => {
@@ -52,7 +59,9 @@ function App() {
       .then(data => setDecors(data))
       .catch(err => console.error("HIBA:", err));
   }, []);
+*/
 //Ezzel megjelenítjük a decorokat a frontend oldalon is, mármint TÉNYLEGES formában, nem csak a konzolon...
+//.......és ügye el is tüntetjük, mert a Home.jsx-ben a keresési funkció miatt már nem a decors-t használjuk, hanem a decorList-et, ami a keresési eredményeket tartalmazza, innentől az App már tényleg csak részleges funkciókban fog szerepelni, mint a routerezésnél... ettől függetlenül ezt is itt hagyom, ha esetleges hibafaktorként bármi fellépne a funkciók alatt, akkor ezzel lehet tesztelni, hogy a backend rendben van-e, és hogy a decorok megjelennek-e egyáltalán a frontend oldalon, vagy sem. Erre persze a -<Route path="/" element={<Home decors={decors} />} />-(ez az eredeti)- elemet is a rúútoknál módositom a megfelelő módon.
 
 
 
@@ -70,8 +79,25 @@ return (
 
       <Routes>
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Home decors={decors} />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+          
+        />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <Favorites />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

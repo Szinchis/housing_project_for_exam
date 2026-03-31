@@ -14,20 +14,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
-
-
+# Ez az alap.
 from django.contrib import admin
 from django.urls import path, include
+
+
+
+
 from rest_framework import routers
 from api.views import (
-    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets, test_decor, register_view, login_view, me_view
+    CategoryViewSets, DecorViewSets, SubCategoryViewSets, CultureViewSets, StyleViewSets, SizeViewSets, ExpansionViewSets, test_decor, register_view, login_view, me_view, FavoriteViewSet
 )
+
+
+# És ha még nem elég, akkor a register-login viewek mellé biggyesztünk favoritot is, mert ügye a kedvenceket ide is ugyan úgy meg kell "importolni", hogy a frontendnek legyen útvonala. Ezeket majd ismét router.registerrel adjuk a routerhez, mert az fogja majd kezelni -FavoriteViewSet.
+
+
+
+
+
+
+
+
 
 
 router = routers.DefaultRouter()
@@ -38,6 +46,7 @@ router.register(r'culture', CultureViewSets)
 router.register(r'style', StyleViewSets)
 router.register(r'size', SizeViewSets)
 router.register(r'expansions', ExpansionViewSets)
+router.register(r'favorites', FavoriteViewSet, basename='favorite')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -53,3 +62,5 @@ urlpatterns = [
 #Itt ügye az apuTEST-et utólag biggyesztettem hozzá a teszteléshez.
 
 #Sokadik: És ügye hozzáteszem a utólagosan a views.get_decors - a regisztrációs URLT-t - és a login URLT-t is.
+
+# És végül a Favorite router-jei.

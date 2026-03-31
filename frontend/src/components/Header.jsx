@@ -12,6 +12,8 @@ export default function Header() {
 
         {user ? (
           <>
+            <Link to="/profile">Profilom</Link>
+            <Link to="/favorites">Kedvencek</Link> 
             <span>Bejelentkezve: {user.username}</span>
             <button onClick={logout}>Kijelentkezés</button>
           </>
