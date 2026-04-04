@@ -182,3 +182,106 @@
     border-right-color: var(--border);
   }
 }
+
+
+
+
+
+
+
+/* Tehát megcsináljuk a hátterünket, ami egy kép lesz, amit a public könyvtárba helyezünk el. A kép neve legyen background. Ezután a body elemre alkalmazzuk a következő stílusokat: */
+body {
+  background-color: #000;
+  background-image: url('/background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+
+
+
+/* Ez a CSS kód a HEADER-re vonatkozik -> */
+/* --- SPELLBOOK HEADER --- */
+
+.header {
+  background-color: #1a1a1a; /* sötét fémes háttér */
+  border-bottom: 2px solid #7a7a7a; /* fémes keret */
+  padding: 10px 20px;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between; /* bal és jobb oldal */
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Főoldal ikon */
+.home-icon {
+  font-size: 26px;
+  color: #ffd100;
+  text-shadow: 1px 1px 2px #000;
+  text-decoration: none;
+}
+
+/* Gombok */
+.header-btn {
+  color: #ffd100;
+  text-decoration: none;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.header-btn:hover {
+  color: #ffffff;
+}
+
+/* Felhasználónév */
+.header-user {
+  color: #ffd100;
+  text-shadow: 1px 1px 2px #000;
+}
+/* A textúrája pedig -> */
+.header {
+  background-image: url('/header_texture.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-bottom: 2px solid #7a7a7a;
+  padding: 10px 20px;
+}
+/* A Home gomb ikon -> */
+.home-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #7a7a7a;
+}
+
+
+
+
+/* A keresőmező stílusai -> */
+.search-input {
+  background: transparent;
+  border: 2px solid #7a7a7a;
+  color: #ffd100;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-shadow: 1px 1px 2px #000;
+}
+
+.search-input::placeholder {
+  color: #d4b96f;
+  opacity: 0.8;
+}

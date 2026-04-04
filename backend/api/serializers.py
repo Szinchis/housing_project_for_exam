@@ -16,18 +16,6 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
-class DecorSerializer(serializers.ModelSerializer):
-    culture = serializers.PrimaryKeyRelatedField(read_only=True)
-    style = serializers.PrimaryKeyRelatedField(read_only=True)
-    size = serializers.PrimaryKeyRelatedField(read_only=True)
-    expansion = serializers.PrimaryKeyRelatedField(read_only=True)
-    category = serializers.PrimaryKeyRelatedField(read_only=True)
-    subcategory = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = Decor
-        fields = '__all__'
-
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
@@ -52,6 +40,44 @@ class ExpansionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Expansion
         fields = '__all__'
+
+
+
+
+
+
+
+# Ez volt az eredeti serializer, ami csak a dekorok ID-jét adta vissza, eddig ezt használtuk az "épitéshez".... az átláthatóság miatt lentebb biggyesztettem, viszont probléma elkerülése végett a FavoriteSerializer ELÉ kell helyeznem, hisz abban már a DecorSerializerre hivatkozom
+#class DecorSerializer(serializers.ModelSerializer):
+    #culture = serializers.PrimaryKeyRelatedField(read_only=True)
+    #style = serializers.PrimaryKeyRelatedField(read_only=True)
+    #size = serializers.PrimaryKeyRelatedField(read_only=True)
+    #expansion = serializers.PrimaryKeyRelatedField(read_only=True)
+    #category = serializers.PrimaryKeyRelatedField(read_only=True)
+    #subcategory = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    #class Meta:
+        #model = Decor
+        #fields = '__all__'
+
+
+# Ide pedig az ÚJ DecorSerializer, ami a dekorok teljes objektumát adja vissza, így a frontendnek nem kell külön lekérdezéseket csinálnia a kapcsolódó modellekhez, hanem egyből megkapja azokat is.
+class DecorSerializer(serializers.ModelSerializer):
+    culture_name = serializers.CharField(source='culture.name', read_only=True)
+    style_name = serializers.CharField(source='style.name', read_only=True)
+    size_name = serializers.CharField(source='size.name', read_only=True)
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
+    expansion_name = serializers.CharField(source='expansion.name', read_only=True)
+
+    class Meta:
+        model = Decor
+        fields = '__all__'
+
+
+
+
+
 
 
 

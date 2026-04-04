@@ -189,7 +189,7 @@ export default function Home({ decors }) {
   return (
     <>
       {/* Ez a rész a keresési és szűrési lehetőségek megjelenítéséért felelős. Itt egy keresőmező van, ahol szövegesen kereshetünk a dekorációk között, ezéé lett az elején az a sok sztét! */}
-      <div style={{ padding: "20px", background: "#f5f5f5", marginBottom: "20px" }}>
+      <div className="search-container">
         <h2>Keresés és szűrés</h2>
 
         {/* Keresőmező */}
@@ -276,64 +276,48 @@ export default function Home({ decors }) {
 
 
 
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
 
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-
-
-        {/*Itt volt egy counter gomb, de ügye azt kivettem, mert ide már nem kell...*/}
-
-
-
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-        </div>
-      </section>
 
       {/* Itten lesznek a decorjaink. */}
-      <h1>Decor lista</h1>
+      <h1>A DEKOROK LISTÁJA</h1>
       <ul>
         {decorList.map(item => (
           <li key={item.id} style={{ marginBottom: "10px" }}>
             <div
-              onClick={() => toggle(item.id)} // kattintásra megnyitja a részleteket
+              onClick={() => toggle(item.id)}
               style={{
                 cursor: "pointer",
                 padding: "10px",
-                background: "#eee",
-                borderRadius: "5px",
+                background: "#111827",
+                color: "#e5e7eb",
+                borderRadius: "8px",
+                border: "1px solid #4b5563",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center"
               }}
             >
-              <span>{item.culture} – {item.style}</span>
+              <div>
+                {/* FŐ CÍM: DECOR NEVE */}
+                <h2 style={{ margin: 0, fontSize: "18px", color: "#fbbf24" }}>
+                  {item.name}
+                </h2>
+
+                {/* ALÁ: KULTÚRA / STÍLUS / KIEGÉSZÍTŐ */}
+                <p style={{ margin: "4px 0", fontSize: "12px", color: "#9ca3af" }}>
+                  {item.culture_name} • {item.style_name} • {item.expansion_name}
+                </p>
+
+                {/* RITKASÁG + PATCH */}
+                <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>
+                  Rarity: {item.rarity} • Patch: {item.patch}
+                </p>
+              </div>
 
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // ne nyissa le a részleteket a szivecskére kattintva
-                  isFavorite(item.id)
-                    ? removeFavorite(item.id)
-                    : addFavorite(item.id);
+                  e.stopPropagation();
+                  isFavorite(item.id) ? removeFavorite(item.id) : addFavorite(item.id);
                 }}
                 style={{
                   cursor: "pointer",
@@ -346,21 +330,25 @@ export default function Home({ decors }) {
                 {isFavorite(item.id) ? "❤️" : "🤍"}
               </button>
             </div>
-            {/* És eddig bezárólag csak kizárólag a megjelenitésért felelős rész*/}
 
             {openId === item.id && (
-              <div // Ez a rész csak akkor jelenik meg, ha a dekoráció ID-je megegyezik az openId-val, ami azt jelenti, hogy ez a dekoráció van éppen megnyitva kattintásra, amit fentebb dolgoztunk ki --jobb esetben--.)
+              <div
                 style={{
                   padding: "10px",
-                  background: "#fafafa",
-                  border: "1px solid #ddd",
-                  borderRadius: "5px",
-                  marginTop: "5px"
+                  background: "#020617",
+                  border: "1px solid #1f2937",
+                  borderRadius: "8px",
+                  marginTop: "5px",
+                  color: "#e5e7eb",
+                  fontSize: "12px"
                 }}
               >
                 <p><strong>ID:</strong> {item.id}</p>
-                <p><strong>Culture:</strong> {item.culture}</p>
-                <p><strong>Style:</strong> {item.style}</p>
+                <p><strong>Category:</strong> {item.category_name} / {item.subcategory_name}</p>
+                <p><strong>Culture:</strong> {item.culture_name}</p>
+                <p><strong>Style:</strong> {item.style_name}</p>
+                <p><strong>Size:</strong> {item.size_name}</p>
+                <p><strong>Expansion:</strong> {item.expansion_name}</p>
               </div>
             )}
           </li>
