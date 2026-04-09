@@ -1,9 +1,3 @@
-import reactLogo from '../assets/react.svg'
-import viteLogo from '../assets/vite.svg'
-import heroImg from '../assets/hero.png'
-
-//Ezeket az importálásokat is megcsináltuk, hogy itt legyen, mert az App.jsx már úgy se tud vele épp mit csinálni...
-
 import { useState, useEffect, useContext } from "react";
 // Itt kiegészitjük az AuthContext importálását is, a favoritoláshoz.
 import { AuthContext } from "../AuthContext";
@@ -279,81 +273,66 @@ export default function Home({ decors }) {
 
 
       {/* Itten lesznek a decorjaink. */}
-      <h1>A DEKOROK LISTÁJA</h1>
-      <ul>
+      <h1 className="main-title">A DEKOROK LISTÁJA</h1>
+
+
+      <ul className="decor-list">
         {decorList.map(item => (
-          <li key={item.id} style={{ marginBottom: "10px" }}>
-            <div
-              onClick={() => toggle(item.id)}
-              style={{
-                cursor: "pointer",
-                padding: "10px",
-                background: "#111827",
-                color: "#e5e7eb",
-                borderRadius: "8px",
-                border: "1px solid #4b5563",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}
-            >
-              <div>
-                {/* FŐ CÍM: DECOR NEVE */}
-                <h2 style={{ margin: 0, fontSize: "18px", color: "#fbbf24" }}>
-                  {item.name}
-                </h2>
+          <li key={item.id} className={`decor-item ${openId === item.id ? 'open' : ''}`}>
+            <div className="decor-card"
+                onClick={() => toggle(item.id)}
+                role="button"
+                aria-expanded={openId === item.id}
+                >
 
-                {/* ALÁ: KULTÚRA / STÍLUS / KIEGÉSZÍTŐ */}
-                <p style={{ margin: "4px 0", fontSize: "12px", color: "#9ca3af" }}>
-                  {item.culture_name} • {item.style_name} • {item.expansion_name}
-                </p>
-
-                {/* RITKASÁG + PATCH */}
-                <p style={{ margin: 0, fontSize: "12px", color: "#6b7280" }}>
-                  Rarity: {item.rarity} • Patch: {item.patch}
-                </p>
+              <div className="decor-main">
+                <h2 className="decor-title">{item.name}</h2>
+                <p className="decor-meta">{item.culture_name} • {item.style_name} • {item.expansion_name}</p>
+                <p className="decor-submeta">Rarity: {item.rarity} • Patch: {item.patch}</p>
               </div>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  isFavorite(item.id) ? removeFavorite(item.id) : addFavorite(item.id);
-                }}
-                style={{
-                  cursor: "pointer",
-                  background: "none",
-                  border: "none",
-                  fontSize: "20px",
-                  color: isFavorite(item.id) ? "red" : "gray"
-                }}
-              >
-                {isFavorite(item.id) ? "❤️" : "🤍"}
-              </button>
+              <div className="decor-controls">
+                <button
+                  className={isFavorite(item.id) ? "fav-btn fav" : "fav-btn"}
+                  onClick={(e) => { e.stopPropagation(); isFavorite(item.id) ? removeFavorite(item.id) : addFavorite(item.id); }}
+                  aria-label="Toggle favorite"
+                >
+                  {isFavorite(item.id) ? "❤️" : "🤍"}
+                </button>
+
+                {item.image_url && <img className="decor-thumb" src={item.image_url} alt={item.name} />}
+              </div>
             </div>
 
-            {openId === item.id && (
-              <div
-                style={{
-                  padding: "10px",
-                  background: "#020617",
-                  border: "1px solid #1f2937",
-                  borderRadius: "8px",
-                  marginTop: "5px",
-                  color: "#e5e7eb",
-                  fontSize: "12px"
-                }}
-              >
-                <p><strong>ID:</strong> {item.id}</p>
-                <p><strong>Category:</strong> {item.category_name} / {item.subcategory_name}</p>
-                <p><strong>Culture:</strong> {item.culture_name}</p>
-                <p><strong>Style:</strong> {item.style_name}</p>
-                <p><strong>Size:</strong> {item.size_name}</p>
-                <p><strong>Expansion:</strong> {item.expansion_name}</p>
-              </div>
-            )}
+
+
+
+
+            {/* Ebben a részben alapvetően az openId alapján kezeltük a lenyilló rész megjelenitését, viszont most kivettük ebből az adatokat, hogy folyamatosan renderelve legyen az oldalon a részletes nézete és innentől kezdve a CSS-ben fogjuk kezelni, hogy mikor legyen látható ez a rész, és mikor ne. */}
+
+            {/* Kell egy konténer, amiben létrehozok egy egyszerű szöveg-itemet. Igy nem terhelem a teljes rendereléssel a böngészőt */}
+            <div className="decor-details" aria-hidden={openId !== item.id}>
+              {/* A könnyű placeholder mindig látható */}
+              <div className="details-placeholder">---</div>
+
+              {/* Nehéz tartalom csak nyitva renderelődik */}
+              {openId === item.id && (
+                <div className="details-heavy">
+                  <p><strong>Category:</strong> {item.category_name} / {item.subcategory_name}</p>
+                  <p><strong>Culture:</strong> {item.culture_name}</p>
+                  <p><strong>Style:</strong> {item.style_name}</p>
+                  <p><strong>Size:</strong> {item.size_name}</p>
+                  <p><strong>Expansion:</strong> {item.expansion_name}</p>
+                  {item.large_image_url && (
+                    <img className="decor-large" src={item.large_image_url} alt={item.name} loading="lazy" />
+                  )}
+                </div>
+              )}
+            </div>
           </li>
         ))}
       </ul>
+
 
       <div className="ticks"></div>
       <section id="spacer"></section>

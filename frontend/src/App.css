@@ -1,3 +1,4 @@
+/* Ez az alap VITE + REACT app.css fájlja, amit a VITE generál nekünk, és amit mi most szépen átalakítunk a saját stílusunkra. Az alap sablon részét meghagyom, bár valószinűleg nem sokat fogunk belőle használni, max eltüntetjük a gyárilag beállitott margókat, mint például az index.css-ben a root alatt az 1pixelünket, vagy ITT a spacer-ünkben. */
 .counter {
   font-size: 16px;
   padding: 5px 10px;
@@ -152,10 +153,10 @@
     }
   }
 }
-
+/* Ezt meghagyjuk, DE a border-top-ot nullázuk. Szükség van rá, hogy maradjon egy kis hely a weblap alján... */
 #spacer {
   height: 88px;
-  border-top: 1px solid var(--border);
+  border-top: 0px solid var(--border);
   @media (max-width: 1024px) {
     height: 48px;
   }
@@ -182,7 +183,6 @@
     border-right-color: var(--border);
   }
 }
-
 
 
 
@@ -231,7 +231,7 @@ body {
 .home-icon {
   font-size: 26px;
   color: #ffd100;
-  text-shadow: 1px 1px 2px #000;
+  text-shadow: 8px 8px 9px #000;
   text-decoration: none;
 }
 
@@ -240,7 +240,7 @@ body {
   color: #ffd100;
   text-decoration: none;
   font-weight: bold;
-  text-shadow: 1px 1px 2px #000;
+  text-shadow: 7px 7px 8px #000;
 }
 
 .header-btn:hover {
@@ -274,7 +274,7 @@ body {
 /* A keresőmező stílusai -> */
 .search-input {
   background: transparent;
-  border: 2px solid #7a7a7a;
+  border: 5px solid #7a7a7a;
   color: #ffd100;
   padding: 6px 10px;
   border-radius: 6px;
@@ -284,4 +284,179 @@ body {
 .search-input::placeholder {
   color: #d4b96f;
   opacity: 0.8;
+}
+
+
+
+
+
+
+
+
+
+
+/* Ez a CSS kód a dekorok kártyaszerű megjelenítésére vonatkozik */
+/* --- DECOR CARDS --- */
+
+/* Lista reset és eltávolított pötty */
+ul.decor-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul.decor-list > li.decor-item {
+  margin: 12px 0;
+}
+
+/* Alap kártya */
+.decor-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #0b1220 0%, #1c2435 100%);
+  color: #5d5d5d;
+  border-radius: 10px;
+  border: 3px solid rgb(97, 93, 93);
+  box-shadow: 0 6px 18px rgba(2,6,12,0.6);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  position: relative;
+}
+
+/* Hover effekt, csak hogy menci legyen */
+.decor-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(2,6,12,0.75), 0 0 8px rgba(200,180,120,0.06);
+  border-color: rgba(180,160,120,0.35);
+}
+
+/* Bal oldali szövegblokk */
+.decor-main {
+  flex: 1 1 auto;
+  text-align: left;
+  min-width: 0;
+}
+
+/* Jobb oldali controls: kedvenc és bélyegkép */
+.decor-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+/* Kedvenc gomb */
+.fav-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #cbd5e1;
+  padding: 4px;
+}
+.fav-btn.fav { color: #ff6b6b; }
+
+/* Bélyegkép */
+.decor-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* Részletek, közvetlenül a kártya alatt, szoros tapadással. Ahhoz, hogy lassan nyiljon le, alkalmazni kell egy kis játékot a max-height-ra, és egy overflow: hidden-et a kártyára, ezt külön is tüntettem fel. */
+.decor-details {
+  margin-top: -2px;
+  padding: 4px 6px;
+  background: linear-gradient(180deg, rgba(2,6,23,0.95), rgba(4,8,18,0.98));
+  border: 1px solid rgba(40,48,60,0.6);
+  border-radius: 8px;
+  color: #28b11e;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(2,6,12,0.5);
+
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 250ms ease;
+  will-change: max-height, opacity;
+}
+
+/* Zárt állapotban a placeholder */
+.decor-details .details-placeholder {
+  font-size: 12px;
+  color: #9aa4b2;
+  padding: 6px 12px;
+}
+
+/* Ez pedig arra kell, hogy milyen legyen, mikor nyitva van!!! FONTOS!! Másképp nem nyilik le az ablak! Ezt majd a key-nél meghivjuk! */
+.decor-item.open .decor-details {
+  max-height: 1600px;
+  padding: 18px 20px;
+  opacity: 1;
+}
+/* A BIG rész külön stílusa */
+.details-heavy { margin-top: 6px; }
+
+
+
+
+
+
+
+
+
+/* Nagy kép a részletekben */
+.decor-large {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+  border-radius: 6px;
+  display: block;
+}
+
+/* Ha a kártyák túl összefolynak, adjunk távolságot */
+ul.decor-list > li + li { margin-top: 10px; }
+
+/* Mobil optimalizáció */
+@media (max-width: 640px) {
+  .decor-card { flex-direction: row; gap: 8px; padding: 10px; }
+  .decor-thumb { width: 48px; height: 48px; }
+  .decor-main { font-size: 14px; }
+  .decor-details { font-size: 13px; }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Most kicsit beszinezzük a főcimet is, a dekorok nevét is etc */
+.main-title {
+  color: #ffbf00;
+  font-weight: 700;
+  text-shadow: 0 6px 0 rgba(0,0,0,0.6);
+}
+.decor-title {
+  color: #ffbf00;
+  font-weight: 600;
+  text-shadow: 0 4px 0 rgba(0,0,0,0.5);
 }
