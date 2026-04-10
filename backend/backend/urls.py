@@ -32,6 +32,12 @@ from api.views import (
 
 
 
+#A képek importálásához importálunk egy kis szettingzt és egy staticot is ->
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+
 
 
 
@@ -58,6 +64,10 @@ urlpatterns = [
     path("api/login/", login_view),
     path("api/me/", me_view),
 ]
+#Ahhoz, hogy kapjunk debugot a képek feltöltése és elérése alatt ->
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 #Itt ügye az apuTEST-et utólag biggyesztettem hozzá a teszteléshez.
 

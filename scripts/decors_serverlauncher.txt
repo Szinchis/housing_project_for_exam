@@ -1,0 +1,61 @@
+@echo off
+REM egyszeru, robusztus indito script - mentsd a projekt gyokerebe start_simple.bat-kent
+
+REM lépj be a script mappájába (ez biztosítja, hogy relatív utak jól működjenek)
+pushd "%~dp0"
+
+REM ellenőriz python
+where python >nul 2>&1
+if errorlevel 1 (
+  echo Python nincs a PATH-on. Telepitsd vagy add hozza a PATH-hoz, majd futtasd ujra.
+  pause
+  popd
+  exit /b 1
+)
+
+REM ellenőriz npm (ha nincs, csak figyelmeztet)
+where npm >nul 2>&1
+if errorlevel 1 (
+  echo npm nincs a PATH-on. Ha frontend van, telepitsd Node.js-t.
+  REM nem lepunk ki, mert lehet csak backend-et akarsz futtatni
+)
+
+REM backend pip telepites ha van requirements.txt
+if exist "backend\requirements.txt" (
+  echo Telepitem a backend csomagokat...
+  pip install -r "backend\requirements.txt"
+) else (
+  echo Nincs backend\requirements.txt - kihagyom a pip telepitest.
+)
+
+REM frontend npm install ha van package.json
+if exist "frontend\package.json" (
+  echo Telepitem a frontend node modulokat...
+  pushd "frontend"
+  npm install
+  popd
+) else (
+  echo Nincs frontend\package.json - kihagyom az npm install-t.
+)
+
+REM inditas: backend ablak
+if exist "backend\manage.py" (
+  echo Inditom a backendet uj ablakban...
+  start "Backend" cmd /k "cd /d backend && echo Inditom: python manage.py runserver 0.0.0.0:8000 && python manage.py runserver 0.0.0.0:8000 && echo Backend kilepett. & pause"
+) else (
+  echo manage.py nem talalhato a backend mappaban - backend nem indult.
+)
+
+REM inditas: frontend ablak
+if exist "frontend\package.json" (
+  echo Inditom a frontendet uj ablakban...
+  start "Frontend" cmd /k "cd /d frontend && echo Inditom: npm run dev && npm run dev && echo Frontend kilepett. & pause"
+) else (
+  echo package.json nem talalhato a frontend mappaban - frontend nem indult.
+)
+
+REM vissza az eredeti mappaba
+popd
+
+echo Kesz.
+pause

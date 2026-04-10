@@ -42,6 +42,11 @@ from .serializers import FavoriteSerializer
 
 
 
+# És ha még ennyi import sem elég, akkor kell egy MultiPartParser is, hogy biztositva legyen a multipart/form-data kérések kezelése.
+from rest_framework.parsers import MultiPartParser, FormParser
+
+
+
 
 
 
@@ -83,6 +88,9 @@ class DecorViewSets(viewsets.ModelViewSet):
     queryset = Decor.objects.all()
     serializer_class = DecorSerializer
 
+    # És akkor peregjen a MultiPartParser ->
+    parser_classes = [MultiPartParser, FormParser]
+
     # Szűrés + keresés
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 
@@ -97,6 +105,8 @@ class DecorViewSets(viewsets.ModelViewSet):
 
     # Keresés név szerint (feltételezve, hogy ezeknek van name mezője)
     search_fields = [
+        'name',
+        'rarity',
         'culture__name',
         'style__name',
         'category__name',

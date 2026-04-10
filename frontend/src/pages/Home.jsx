@@ -318,11 +318,11 @@ export default function Home({ decors }) {
               {/* Nehéz tartalom csak nyitva renderelődik */}
               {openId === item.id && (
                 <div className="details-heavy">
-                  <p><strong>Category:</strong> {item.category_name} / {item.subcategory_name}</p>
-                  <p><strong>Culture:</strong> {item.culture_name}</p>
-                  <p><strong>Style:</strong> {item.style_name}</p>
-                  <p><strong>Size:</strong> {item.size_name}</p>
-                  <p><strong>Expansion:</strong> {item.expansion_name}</p>
+                  <p><strong>Kategóriája:</strong> {item.category_name} / {item.subcategory_name}</p>
+                  <p><strong>Kúltúra/Nép:</strong> {item.culture_name}</p>
+                  <p><strong>Stílus:</strong> {item.style_name}</p>
+                  <p><strong>Méret:</strong> {item.size_name}</p>
+                  <p><strong>Expansion/Kieg.:</strong> {item.expansion_name}</p>
                   {item.large_image_url && (
                     <img className="decor-large" src={item.large_image_url} alt={item.name} loading="lazy" />
                   )}

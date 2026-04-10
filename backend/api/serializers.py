@@ -70,6 +70,8 @@ class DecorSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
     expansion_name = serializers.CharField(source='expansion.name', read_only=True)
 
+    image = serializers.ImageField(required=False, allow_null=True)
+
     class Meta:
         model = Decor
         fields = '__all__'

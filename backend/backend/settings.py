@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -141,3 +142,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     #"http://
 ]
+
+# És a képekhez pedig ez kell, hogy a MEDIA_URL és MEDIA_ROOT is be legyen állítva, hogy a képek feltöltése és elérése is működjön.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

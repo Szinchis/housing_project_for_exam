@@ -26,16 +26,21 @@ export function AuthProvider({ children }) {
       });
   }, []);
 
+  // Bejelentkezéskor elmentjük a token-t és lekérjük a user adatokat, de módositjuk annyival, hogy adunk egy visszajelzést a login kérésre az if elágazással, hogy sikeres volt-e vagy sem..
   function login(token) {
     localStorage.setItem("token", token);
-
     fetch("http://localhost:8000/api/me/", {
-      headers: {
-        Authorization: `Token ${token}`
-      }
+      headers: { Authorization: `Token ${token}` }
     })
-      .then(res => res.json())
-      .then(data => setUser(data));
+      .then(res => {
+        if (!res.ok) throw new Error("Invalid token");
+        return res.json();
+      })
+      .then(data => setUser(data))
+      .catch(() => {
+        localStorage.removeItem("token");
+        setUser(null);
+      });
   }
 
   function logout() {

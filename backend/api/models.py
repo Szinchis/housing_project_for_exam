@@ -60,6 +60,10 @@ class Decor(models.Model):
     size = models.ForeignKey(Size, on_delete = models.SET_NULL, null = True, blank = True)
     expansion = models.ForeignKey(Expansion, on_delete = models.SET_NULL, null = True, blank = True)
 
+    #A dekorációkhoz tartozó képek és leírások tárolására szolgáló mezőket kicsit késve, de meghozzuk a modelbe ->
+    description = models.TextField(null = True, blank = True)
+    image_url = models.ImageField(upload_to='decors', null = True, blank = True)
+
     def __str__(self):
         return self.name
     
