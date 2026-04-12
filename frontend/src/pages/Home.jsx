@@ -300,7 +300,16 @@ export default function Home({ decors }) {
                   {isFavorite(item.id) ? "❤️" : "🤍"}
                 </button>
 
-                {item.image_url && <img className="decor-thumb" src={item.image_url} alt={item.name} />}
+
+                {/*Ide cuppantjuk a képeinket -> */}
+                {item.image && (
+                  <img
+                    className="decor-thumb"
+                    src={item.image.startsWith("http") ? item.image : `http://127.0.0.1:8000${item.image}`}
+                    alt={item.name}
+                  />
+                )}
+
               </div>
             </div>
 
@@ -318,14 +327,28 @@ export default function Home({ decors }) {
               {/* Nehéz tartalom csak nyitva renderelődik */}
               {openId === item.id && (
                 <div className="details-heavy">
-                  <p><strong>Kategóriája:</strong> {item.category_name} / {item.subcategory_name}</p>
-                  <p><strong>Kúltúra/Nép:</strong> {item.culture_name}</p>
-                  <p><strong>Stílus:</strong> {item.style_name}</p>
-                  <p><strong>Méret:</strong> {item.size_name}</p>
-                  <p><strong>Expansion/Kieg.:</strong> {item.expansion_name}</p>
-                  {item.large_image_url && (
-                    <img className="decor-large" src={item.large_image_url} alt={item.name} loading="lazy" />
-                  )}
+                  <div className="details-text">
+                    <p><strong>Kategóriája:</strong> {item.category_name} / {item.subcategory_name}</p>
+                    <p><strong>Kúltúra/Nép:</strong> {item.culture_name}</p>
+                    <p><strong>Stílus:</strong> {item.style_name}</p>
+                    <p><strong>Méret:</strong> {item.size_name}</p>
+                    <p><strong>Expansion/Kieg.:</strong> {item.expansion_name}</p>
+
+                    {item.description && (
+                      <p className="decor-description">{item.description}</p>
+                    )}
+                  </div>
+
+                  <div className="details-image">
+                    {item.image && (
+                      <img
+                        className="decor-large"
+                        src={item.image.startsWith("http") ? item.image : `http://127.0.0.1:8000${item.image}`}
+                        alt={item.name}
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
                 </div>
               )}
             </div>

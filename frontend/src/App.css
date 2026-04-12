@@ -349,22 +349,27 @@ ul.decor-list > li.decor-item {
 
 /* Kedvenc gomb */
 .fav-btn {
+  order: 2;
   background: transparent;
   border: none;
   font-size: 20px;
   cursor: pointer;
   color: #cbd5e1;
   padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.fav-btn.fav { color: #ff6b6b; }
 
-/* Bélyegkép */
+/* A bélyegkép legyen balra, a szív jobbra */
 .decor-thumb {
+  order: 1;
   width: 56px;
   height: 56px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.04);
+  flex: 0 0 56px;
 }
 
 
@@ -385,7 +390,7 @@ ul.decor-list > li.decor-item {
   background: linear-gradient(180deg, rgba(2,6,23,0.95), rgba(4,8,18,0.98));
   border: 1px solid rgba(40,48,60,0.6);
   border-radius: 8px;
-  color: #28b11e;
+  color: #ffffff;
   font-size: 13px;
   box-shadow: 0 6px 18px rgba(2,6,12,0.5);
 
@@ -408,8 +413,33 @@ ul.decor-list > li.decor-item {
   padding: 18px 20px;
   opacity: 1;
 }
-/* A BIG rész külön stílusa */
-.details-heavy { margin-top: 6px; }
+/* Lenyíló VERYBIG rész: két oszlop (szöveg balra, kép jobbra) */
+.details-heavy {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 16px 0;
+}
+
+/* Bal oszlop balra igazítása és tördelés kezelése */
+.details-text {
+  text-align: left;
+  direction: ltr;
+  /* biztosítja, hogy a hosszú sorok törjenek és ne lógjanak ki */
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  min-width: 0; /* flex tördeléshez fontos */
+  color: rgb(255, 255, 255);
+}
+
+/* A leírás külön is balra igazítva */
+.decor-description {
+  text-align: left;
+  margin-top: 12px;
+  color: #33dd0d;
+  line-height: 1.45;
+}
 
 
 
@@ -418,27 +448,63 @@ ul.decor-list > li.decor-item {
 
 
 
+.details-image {
+  flex: 0 0 320px; /* fix hely a képnek */
+  max-width: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-/* Nagy kép a részletekben */
 .decor-large {
   width: 100%;
-  max-width: 420px;
-  margin-top: 8px;
-  border-radius: 6px;
-  display: block;
+  height: auto;
+  object-fit: contain; /* ne vágja le, megtartja az arányt */
+  max-width: 320px;
+  box-shadow: 3px 6px 10px rgba(172, 129, 9);
 }
+
+
+
+
+
+
+
+
+
+
 
 /* Ha a kártyák túl összefolynak, adjunk távolságot */
 ul.decor-list > li + li { margin-top: 10px; }
 
-/* Mobil optimalizáció */
-@media (max-width: 640px) {
-  .decor-card { flex-direction: row; gap: 8px; padding: 10px; }
-  .decor-thumb { width: 48px; height: 48px; }
-  .decor-main { font-size: 14px; }
-  .decor-details { font-size: 13px; }
-}
+/* Reszponzív: mobilon egymás alá rendezés, ha lehetséges... HA... */
+@media (max-width: 800px) {
+  .decor-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
+  .decor-controls {
+    justify-content: flex-end;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .details-heavy {
+    flex-direction: column-reverse; /* kép alul, szöveg felül */
+    gap: 12px;
+  }
+
+  .details-image {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+
+  .decor-thumb {
+    width: 48px;
+    height: 48px;
+  }
+}
 
 
 
@@ -451,7 +517,7 @@ ul.decor-list > li + li { margin-top: 10px; }
 
 /* Most kicsit beszinezzük a főcimet is, a dekorok nevét is etc */
 .main-title {
-  color: #ffbf00;
+  color: #d7a40c;
   font-weight: 700;
   text-shadow: 0 6px 0 rgba(0,0,0,0.6);
 }
