@@ -1,5 +1,5 @@
 @echo off
-echo === FRONTEND JAVÍTÁS ===
+echo === FRONTEND JAVITAS ===
 cd frontend
 
 echo node_modules torlese...
@@ -8,5 +8,5 @@ rmdir /s /q node_modules
 echo npm install futtatasa...
 npm install
 
-echo KÉSZ!
+echo KESZ!
 pause

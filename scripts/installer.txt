@@ -1,13 +1,13 @@
 @echo off
-echo === BACKEND CSOMAGOK TELEPÍTÉSE ===
+echo === BACKEND CSOMAGOK TELEPITESE ===
 cd backend
 pip install -r requirements.txt
 
 echo.
-echo === FRONTEND CSOMAGOK TELEPÍTÉSE ===
+echo === FRONTEND CSOMAGOK TELEPITESE ===
 cd ../frontend
 npm install
 
 echo.
-echo TELEPÍTÉS KÉSZ!
+echo TELEPITES KESZ!
 pause

@@ -1,0 +1,51 @@
+@echo off
+echo ============================================
+echo   PROJEKT VERZIOELLENORZO - BACKEND/FRONTEND
+echo ============================================
+echo.
+echo ============================================
+echo Ez a kis ablakocska arra szolgal, hogy meglesse szamodra, hogy milyen verziok elotelepitesere lesz szukseged.
+echo This little window is there to let you know what versions you will need to pre-install.
+echo.
+echo FIGYELEM! / WARNING!
+echo A Python es Node.JS verziok elotelepitese a verziok kozotti szintaktikai es modul-kompatibilitasi problemak miatt nem lehetseges! Kerlek ezeket telepitsd elotte a megfelelo hivatalos oldalaikrol!
+echo Pre-installation of Python and Node.JS versions is not possible due to syntax and module compatibility issues between versions! Please install them from their respective official websites first!
+
+echo.
+
+echo --- PYTHON VERZIO ---
+python --version || echo Python verzio nem elerheto
+echo.
+
+echo --- DJANGO VERZIO ---
+python -m django --version || echo Django nincs telepitve
+echo.
+
+echo --- NODE VERZIO ---
+node --version || echo Node nincs telepitve
+echo.
+
+echo --- NPM VERZIO ---
+npm --version || echo NPM nincs telepitve
+echo.
+
+echo --- REACT VERZIO ---
+npm list react --depth=1 || echo React verzio nem listazhato
+echo.
+
+echo --- VITE VERZIO ---
+npm list vite --depth=1 || echo Vite verzio nem listazhato
+echo.
+
+echo.
+
+echo ============================================
+echo   ELLENORZES KESZ!
+echo ============================================
+echo Hasznalati Mayor League Pro tipp ->
+echo A Program a kovetkezo verzioszamok alatt irodott:
+echo -Python 3.14.4 (ofisöl python-manager installer)
+echo -DJango 6.0.2
+echo -Node.JS 24.14.0 (LTS confirmed)
+echo -NPM 11.9.0
+pause
