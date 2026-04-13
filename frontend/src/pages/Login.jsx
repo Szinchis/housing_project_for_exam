@@ -17,7 +17,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const apiBase = process.env.REACT_APP_API_URL || "http://localhost:8000";
+      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiBase}/api/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

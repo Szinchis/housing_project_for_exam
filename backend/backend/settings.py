@@ -112,11 +112,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Ezzel engedélyezzük a filtert, amit telepitettünk. Jobb esetben.
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
     ]
 }
+
 
 
 # Internationalization

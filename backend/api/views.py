@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import render
 
 #Ez kell a test_decorhoz.
@@ -225,3 +226,12 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except IntegrityError:
+            return Response(
+                {"detail": "Favorite already exists."},
+                status=status.HTTP_400_BAD_REQUEST
+            )

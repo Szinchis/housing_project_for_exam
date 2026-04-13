@@ -1,9 +1,49 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 export default function Header() {
   const { user, logout } = useContext(AuthContext);
+  const [headerFavorites, setHeaderFavorites] = useState([]);
+
+  // Lekérdezi a kedvenceket (normalizálva decor_id-re)
+  async function fetchHeaderFavorites() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setHeaderFavorites([]);
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8000/api/favorites/", {
+        headers: { Authorization: `Token ${token}` }
+      });
+      if (!res.ok) {
+        console.error("Header favorites load failed:", res.status);
+        setHeaderFavorites([]);
+        return;
+      }
+      const data = await res.json();
+      const normalized = data.map(f => ({
+        ...f,
+        decor_id: typeof f.decor === "object" ? f.decor.id : f.decor
+      }));
+      setHeaderFavorites(normalized);
+    } catch (err) {
+      console.error("Header favorites fetch error:", err);
+      setHeaderFavorites([]);
+    }
+  }
+
+  useEffect(() => {
+    // Betöltés mountkor
+    fetchHeaderFavorites();
+
+    // Eseményfigyelő: Home dispatch-olni fogja ezt, ha változik a favorites
+    const handler = () => fetchHeaderFavorites();
+    window.addEventListener("favoritesChanged", handler);
+    return () => window.removeEventListener("favoritesChanged", handler);
+  }, []);
 
   return (
     <header className="header">
@@ -21,7 +61,9 @@ export default function Header() {
           {user ? (
             <>
               <Link to="/profile" className="header-btn">Profilom</Link>
-              <Link to="/favorites" className="header-btn">Kedvencek</Link>
+              <Link to="/favorites" className="header-btn">
+                Kedvencek{headerFavorites.length ? ` (${headerFavorites.length})` : ""}
+              </Link>
               <span className="header-user">Bejelentkezve: {user.username}</span>
               <button onClick={logout} className="header-btn">Kijelentkezés</button>
             </>

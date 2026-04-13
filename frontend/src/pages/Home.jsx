@@ -1,30 +1,19 @@
 import { useState, useEffect, useContext } from "react";
-// Itt kiegészitjük az AuthContext importálását is, a favoritoláshoz.
 import { AuthContext } from "../AuthContext";
 
-
-
-
-
-
-
-
-
-//Ez maga a "komponensünk", ami a Home oldalunk lesz, és itt fogjuk megjeleníteni a decorjainkat is. A decors prop-ot az App.jsx-ből kapja majd meg, ahol lekérjük az adatokat a backendről.
+// Home komponens
 export default function Home({ decors }) {
-  // A favoritoláshoz szükségünk lesz a tokenre, amit az AuthContext-ből fogunk kinyerni, és egy favorites state-re, amiben a kedvenceinket fogjuk tárolni. Az useEffect-ben pedig lekérjük a kedvenceinket a backendről, ha van tokenünk. A segédfüggvények pedig az isFavorite, addFavorite és removeFavorite lesznek, amikkel kezelni tudjuk a kedvenceinket. Ezeket majd a decorjaink megjelenítésekor fogjuk használni, hogy meg tudjuk jeleníteni, melyik decor van a kedvenceink között, és hogy hozzá tudjuk adni vagy eltávolítani őket a kedvenceink közül.
-  const { token } = useContext(AuthContext);
-  const [favorites, setFavorites] = useState([]);
+  // Auth token a contextből; ha nincs, fallback localStorage-re
+  const { token: ctxToken } = useContext(AuthContext);
+  const token = ctxToken || localStorage.getItem("token");
 
-  //A decors prop helyett a Home.jsx fogja lekérni a dekorokat, ezért kell neki egy State ->
+  // Alap state-ek
+  const [favorites, setFavorites] = useState([]);
+  const [favLoading, setFavLoading] = useState({}); // { [decorId]: true/false }
+
   const [decorList, setDecorList] = useState([]);
 
-
-
-
-
-  //Ezek pedig a keresési opciók state-jei, amiket majd a dekorjaink szűrésére fogunk használni. Ezeket is a Home komponensben tároljuk, mert itt fogjuk megjeleníteni a dekorjainkat, és itt lesznek a szűrési lehetőségek is.
-  // Keresés + szűrők
+  // Szűrők / keresés
   const [search, setSearch] = useState("");
   const [cultureFilter, setCultureFilter] = useState("");
   const [styleFilter, setStyleFilter] = useState("");
@@ -41,57 +30,155 @@ export default function Home({ decors }) {
   const [subcategories, setSubcategories] = useState([]);
   const [expansions, setExpansions] = useState([]);
 
-
-
-
-
-
-
-
+  // --- Betöltések -------------------------------------------------------
+  // 1) Dekorok betöltése (ha nem propból jön)
   useEffect(() => {
-    if (!token) return;
+    // Ha decors prop nincs, töltsük le
+    if (!decors || decors.length === 0) {
+      fetch("http://localhost:8000/api/decors/")
+        .then(res => {
+          if (!res.ok) throw new Error(`Decors load failed: ${res.status}`);
+          return res.json();
+        })
+        .then(data => setDecorList(data))
+        .catch(err => console.error("Failed to load decors:", err));
+    } else {
+      setDecorList(decors);
+    }
+  }, [decors]);
 
-    fetch("http://127.0.0.1:8000/api/favorites/", {
-      headers: {
-        Authorization: `Token ${token}`
-      }
+  // 2) Kedvencek betöltése (ha van token)
+  useEffect(() => {
+    if (!token) {
+      setFavorites([]);
+      return;
+    }
+
+    fetch("http://localhost:8000/api/favorites/", {
+      headers: { Authorization: `Token ${token}` }
     })
-      .then(res => res.json())
-      .then(data => setFavorites(data));
+      .then(res => {
+        if (!res.ok) throw new Error(`Favorites load failed: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        // Normalizálás: biztosítjuk, hogy minden fav-ban legyen decor_id
+        const normalized = data.map(f => ({
+          ...f,
+          decor_id: typeof f.decor === "object" ? f.decor.id : f.decor
+        }));
+        setFavorites(normalized);
+      })
+      .catch(err => {
+        console.error("Failed to load favorites:", err);
+        setFavorites([]);
+      });
   }, [token]);
 
-  // Segédfüggvények is IDE jönnek ---------------------------------------
 
+
+
+
+
+
+  // --- Segédfüggvények a favorizáláshoz ---------------------------------
+
+  // isFavorite: kezeli, ha fav.decor lehet id vagy objektum, illetve decor_id mezőt
   function isFavorite(decorId) {
-    return favorites.some(fav => fav.decor === decorId);
-  }
-
-  function addFavorite(decorId) {
-    fetch("http://127.0.0.1:8000/api/favorites/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`
-      },
-      body: JSON.stringify({ decor_id: decorId })
-    })
-      .then(res => res.json())
-      .then(newFav => setFavorites([...favorites, newFav]));
-  }
-
-  function removeFavorite(decorId) {
-    const fav = favorites.find(f => f.decor === decorId);
-    if (!fav) return;
-
-    fetch(`http://127.0.0.1:8000/api/favorites/${fav.id}/`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Token ${token}`
-      }
-    }).then(() => {
-      setFavorites(favorites.filter(f => f.id !== fav.id));
+    return favorites.some(fav => {
+      if (!fav) return false;
+      if (fav.decor_id) return fav.decor_id === decorId;
+      if (typeof fav.decor === "number") return fav.decor === decorId;
+      if (fav.decor && typeof fav.decor === "object") return fav.decor.id === decorId;
+      return false;
     });
   }
+
+  // Egyetlen, teljes toggleFavorite implementáció (POST / DELETE kezelve, favLoading védelem)
+  async function toggleFavorite(decorId) {
+    if (favLoading[decorId]) return; // már folyamatban van
+
+    const currentToken = ctxToken || localStorage.getItem("token");
+    if (!currentToken) {
+      console.warn("Nincs token, nem lehet kedvencet módosítani");
+      return;
+    }
+
+    // Megkeressük a meglévő favorite-ot (ha van)
+    const fav = favorites.find(f => {
+      if (!f) return false;
+      if (f.decor_id) return f.decor_id === decorId;
+      if (typeof f.decor === "number") return f.decor === decorId;
+      if (f.decor && typeof f.decor === "object") return f.decor.id === decorId;
+      return false;
+    });
+
+    setFavLoading(prev => ({ ...prev, [decorId]: true }));
+
+    try {
+      if (fav) {
+        // Törlés
+        const res = await fetch(`http://localhost:8000/api/favorites/${fav.id}/`, {
+          method: "DELETE",
+          headers: { Authorization: `Token ${currentToken}` }
+        });
+
+        const text = await res.text();
+        console.log("DELETE status:", res.status, "body:", text);
+
+        if (res.ok) {
+          setFavorites(prev => prev.filter(f => f.id !== fav.id));
+          // miután frissítetted a setFavorites-t (pl. setFavorites(prev => [...prev, normalized]) vagy setFavorites(prev => prev.filter(...)))
+          window.dispatchEvent(new Event("favoritesChanged"));
+
+        } else {
+          console.error("Delete failed:", res.status, text);
+        }
+      } else {
+        // Helyi ellenőrzés, hogy elkerüljük a duplikátumot
+        if (isFavorite(decorId)) {
+          console.log("Already favorite (local check)");
+        } else {
+          // Hozzáadás
+          const res = await fetch("http://localhost:8000/api/favorites/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${currentToken}`
+            },
+            body: JSON.stringify({ decor_id: decorId })
+          });
+
+          const text = await res.text();
+          console.log("POST status:", res.status, "body:", text);
+
+          if (res.ok) {
+            const newFav = JSON.parse(text);
+            const normalized = {
+              ...newFav,
+              decor_id: typeof newFav.decor === "object" ? newFav.decor.id : newFav.decor
+            };
+            setFavorites(prev => [...prev, normalized]);
+            // miután frissítetted a setFavorites-t (pl. setFavorites(prev => [...prev, normalized]) vagy setFavorites(prev => prev.filter(...)))
+            window.dispatchEvent(new Event("favoritesChanged"));
+
+          } else {
+            // Ha a backend kontrollált hibát ad (pl. már létezik), csak logoljuk
+            console.error("Add failed:", res.status, text);
+          }
+        }
+      }
+    } catch (err) {
+      console.error("toggleFavorite error:", err);
+    } finally {
+      setFavLoading(prev => ({ ...prev, [decorId]: false }));
+    }
+  }
+
+  // (A komponens további része itt folytatódik...)
+
+
+
 
 
 
@@ -294,18 +381,17 @@ export default function Home({ decors }) {
               <div className="decor-controls">
                 <button
                   className={isFavorite(item.id) ? "fav-btn fav" : "fav-btn"}
-                  onClick={(e) => { e.stopPropagation(); isFavorite(item.id) ? removeFavorite(item.id) : addFavorite(item.id); }}
+                  onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
                   aria-label="Toggle favorite"
+                  disabled={!!favLoading[item.id]}
                 >
                   {isFavorite(item.id) ? "❤️" : "🤍"}
                 </button>
-
-
                 {/*Ide cuppantjuk a képeinket -> */}
                 {item.image && (
                   <img
                     className="decor-thumb"
-                    src={item.image.startsWith("http") ? item.image : `http://127.0.0.1:8000${item.image}`}
+                    src={item.image.startsWith("http") ? item.image : `http://localhost:8000${item.image}`}
                     alt={item.name}
                   />
                 )}
@@ -343,7 +429,7 @@ export default function Home({ decors }) {
                     {item.image && (
                       <img
                         className="decor-large"
-                        src={item.image.startsWith("http") ? item.image : `http://127.0.0.1:8000${item.image}`}
+                        src={item.image.startsWith("http") ? item.image : `http://localhost:8000${item.image}`}
                         alt={item.name}
                         loading="lazy"
                       />

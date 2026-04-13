@@ -27,26 +27,30 @@ export function AuthProvider({ children }) {
   }, []);
 
   // Bejelentkezéskor elmentjük a token-t és lekérjük a user adatokat, de módositjuk annyival, hogy adunk egy visszajelzést a login kérésre az if elágazással, hogy sikeres volt-e vagy sem..
-  function login(token) {
+  async function login(token) {
     localStorage.setItem("token", token);
-    fetch("http://localhost:8000/api/me/", {
-      headers: { Authorization: `Token ${token}` }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Invalid token");
-        return res.json();
-      })
-      .then(data => setUser(data))
-      .catch(() => {
-        localStorage.removeItem("token");
-        setUser(null);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/me/", {
+        headers: { Authorization: `Token ${token}` }
       });
+
+      if (!res.ok) throw new Error("Invalid token");
+
+      const data = await res.json();
+      setUser(data);
+
+    } catch {
+      localStorage.removeItem("token");
+      setUser(null);
+    }
   }
 
   function logout() {
     localStorage.removeItem("token");
     setUser(null);
   }
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
