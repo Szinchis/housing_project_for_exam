@@ -29,6 +29,15 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Favorites from "./pages/Favorites";
 
 
+//Alsó fejléc importálása ->
+import Footer from "./components/Footer";
+
+
+
+
+
+
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -99,6 +108,8 @@ return (
           }
         />
       </Routes>
+
+      <Footer />
     </BrowserRouter>
   </AuthProvider>
 );
